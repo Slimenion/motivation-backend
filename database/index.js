@@ -48,7 +48,7 @@ class Database {
 
     async selectTasksForStudent({ login }) {
         const response = new Promise((resolve, reject) => {
-                this.database.all(`SELECT * FROM tasks WHERE login = '${login}';`, (err, rows) => {
+                this.database.all(`SELECT tasks.task, tasks.id, tasks.login, tasks.sub_task, tasks.deadline, topics.topic_title FROM tasks,topics WHERE tasks.login = '${login}' AND tasks.id_topic_task = topics.id;`, (err, rows) => {
                     if (err) {
                         console.log('Error running sql');
                         console.log(err);
