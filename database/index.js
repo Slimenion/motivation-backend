@@ -94,6 +94,7 @@ class Database {
                    task,
                    sub_task,
                    deadline,
+                    id_topic_task,
                }) {
         try {
             let lastTaskLogin = await new Promise((resolve, reject) => {
@@ -140,12 +141,13 @@ class Database {
                 login = 's1';
             }
 
-            this.database.run(`INSERT INTO tasks(login, task, sub_task, deadline)
+            this.database.run(`INSERT INTO tasks(login, task, sub_task, deadline, id_topic_task)
                                  VALUES(
                                  '${login}',
                                  '${task}',
                                  '${sub_task}',
-                                 '${deadline}'
+                                 '${deadline}',
+                                '${id_topic_task}'
                                  );`);
         } catch (error) {
             throw new Error(error.message);
@@ -274,6 +276,38 @@ class Database {
             const {role: userRole} = jwt.verify(token, SECRET_KEY_JWT);
 
             return userRole;
+        } catch (exception) {
+            console.log(exception);
+        }
+    }
+
+    async getTopics() {
+        try {
+            const topics = await new Promise((resolve, reject) => {
+                    this.database.all(`SELECT * FROM topics`, (err, rows) => {
+                        if (err) {
+                            console.log('Error running sql');
+                            console.log(err);
+                            reject(err)
+                        } else {
+                            resolve(rows)
+                        }
+                    })
+                }
+            )
+
+            return topics;
+        } catch (exception) {
+            console.log(exception);
+        }
+    }
+
+    async setTopic({topic_title}) {
+        try {
+            this.database.run(`INSERT INTO topics(topic_title)
+                                 VALUES(
+                                 '${topic_title}'
+                                 );`);
         } catch (exception) {
             console.log(exception);
         }
