@@ -1,7 +1,6 @@
 import xml2js from 'xml2js';
-// import * as fs from "fs";
 import {readFile} from 'node:fs/promises';
-import {decodeMobileCode} from "../utils/decodeMobileCode.js";
+import {decodeMobileCode} from "../decodeMobileCode.js";
 
 const parser = new xml2js.Parser();
 
@@ -20,5 +19,3 @@ export async function parseTXT(file) {
         return decodeMobileCode(el.replace('\r', ''));
     });
 }
-
-parseTXT('test.txt');

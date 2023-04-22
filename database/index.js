@@ -1,6 +1,16 @@
 import sqlite from 'sqlite3';
-// import pkg from 'pg';
-// const { Client } = pkg;
+import jwt from "jsonwebtoken";
+import {SECRET_KEY_JWT} from "./constants.js";
+import bcrypt from "bcrypt";
+
+function generateAccessToken(login, role) {
+    const payload = {
+        login,
+        role,
+    }
+
+    return jwt.sign(payload, SECRET_KEY_JWT, {expiresIn: '24h'})
+}
 
 
 class Database {
@@ -224,6 +234,50 @@ class Database {
                                 VALUES(${element});`);
         });
     }
+
+    async getUserToken({login, password}) {
+        try {
+            const getUserByLogin = await new Promise((resolve, reject) => {
+                    this.database.all(`SELECT * FROM users WHERE login = '${login}';`, (err, rows) => {
+                        if (err) {
+                            console.log('Error running sql');
+                            console.log(err);
+                            reject(err)
+                        } else {
+                            resolve(rows)
+                        }
+                    })
+                }
+            )
+
+            if (getUserByLogin.length !== 1) {
+                throw new Error('Нет такого пользователя')
+            }
+
+            const user = getUserByLogin[0];
+
+            const isValidPassword = bcrypt.compareSync(password, user.password);
+
+            if(!isValidPassword) {
+                throw new Error('Не верный пароль')
+            }
+
+            const token = generateAccessToken(user.login, user.role);
+            return token;
+        } catch (exception) {
+            console.log(exception);
+        }
+    }
+
+    async getUserRole({token}) {
+        try {
+            const {role: userRole} = jwt.verify(token, SECRET_KEY_JWT);
+
+            return userRole;
+        } catch (exception) {
+            console.log(exception);
+        }
+    }
 }
 
-export const db = new Database('./sqlite-db/database.sqlite-db');
+export const db = new Database('./database/database.db');

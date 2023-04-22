@@ -1,4 +1,4 @@
-export function nerosetAnswer(inputCode) {
+export function getMotivationGroup(inputCode) {
     inputCode = inputCode.split("_")
     let mp = inputCode.shift();
     mp = [mp[0], mp[1], mp[2], mp[3], mp[4], mp[5], mp[6], mp[7]];
