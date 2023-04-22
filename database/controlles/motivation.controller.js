@@ -103,3 +103,21 @@ export async function getUserRole(req, res) {
         res.status(500).json({message: 'Не удалось получить роль пользователя'})
     }
 }
+
+export async function  getTopics(req, res) {
+    try {
+        const topics = await db.getTopics(req.body);
+        res.json({topics});
+    } catch(err) {
+        res.status(500).json({message: 'Не удалось получить темы'})
+    }
+}
+
+export async function setTopic(req, res) {
+    try {
+        await db.setTopic(req.body);
+        res.json({message: 'Тема записана'});
+    } catch(err) {
+        res.status(500).json({message: 'Не удалось получить темы'})
+    }
+}
